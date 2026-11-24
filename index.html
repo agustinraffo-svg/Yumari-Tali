@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jeeves — Proposal · Yumari</title>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold: #C9A84C;
+      --gold-light: #E8C96A;
+      --gold-pale: #FDF3D7;
+      --dark: #0A0A0A;
+      --dark2: #141414;
+      --dark3: #1E1E1E;
+      --dark4: #2A2A2A;
+      --gray: #6B7280;
+      --gray-light: #9CA3AF;
+      --white: #FFFFFF;
+      --off-white: #F9F9F7;
+      --border: rgba(255,255,255,0.08);
+      --usdc: #2775CA;
+      --usdt: #26A17B;
+      --kd-blue: #2E6BFF;
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Helvetica, Arial, sans-serif;
+      background: var(--off-white);
+      color: #111;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Typography ── */
+    h1 { font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; }
+    h2 { font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 800; line-height: 1.15; letter-spacing: -0.025em; }
+    h3 { font-size: 1.25rem; font-weight: 700; }
+    h4 { font-size: 1rem; font-weight: 600; }
+    p { color: #444; }
+    em { font-style: normal; color: var(--gold); }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #E5E7EB;
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 1rem; }
+    .nav-brand .jeeves-logo {
+      font-size: 1.3rem; font-weight: 900; letter-spacing: -0.04em;
+      background: linear-gradient(135deg, #0A0A0A 0%, #444 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-divider { width: 1px; height: 24px; background: #D1D5DB; }
+    .nav-client { font-size: 0.85rem; font-weight: 700; color: var(--kd-blue); letter-spacing: 0.02em; }
+    .nav-links { display: flex; gap: 0.5rem; }
+    .nav-links a {
+      font-size: 0.8rem; font-weight: 500; color: #555;
+      text-decoration: none; padding: 0.4rem 0.75rem;
+      border-radius: 6px; transition: all 0.2s;
+    }
+    .nav-links a:hover { background: #F3F4F6; color: #111; }
+    .nav-cta {
+      background: var(--dark); color: var(--white);
+      font-size: 0.82rem; font-weight: 600;
+      padding: 0.5rem 1.1rem; border-radius: 8px;
+      text-decoration: none; transition: background 0.2s;
+    }
+    .nav-cta:hover { background: #333; }
+
+    /* ── Section Wrapper ── */
+    .section { padding: 6rem 2rem; }
+    .section.dark { background: var(--dark); color: var(--white); }
+    .section.dark p { color: var(--gray-light); }
+    .section.dark-alt { background: var(--dark2); color: var(--white); }
+    .section.dark-alt p { color: var(--gray-light); }
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    .section-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      background: rgba(201,168,76,0.12); color: var(--gold);
+      border: 1px solid rgba(201,168,76,0.3);
+      padding: 0.35rem 0.85rem; border-radius: 999px; margin-bottom: 1.25rem;
+    }
+    .section-badge.light { background: rgba(201,168,76,0.08); }
+
+    /* ── Hero ── */
+    #sec-hero {
+      background: var(--dark);
+      padding: 6rem 2rem 5rem;
+      color: var(--white);
+      position: relative; overflow: hidden;
+    }
+    #sec-hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 80% 50%, rgba(201,168,76,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .hero-label {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1rem;
+    }
+    .hero-title { color: var(--white); margin-bottom: 1.25rem; }
+    .hero-title em { color: var(--gold); }
+    .hero-subtitle { font-size: 1.1rem; color: #9CA3AF; margin-bottom: 2.5rem; line-height: 1.7; }
+    .hero-stats { display: flex; gap: 2rem; margin-top: 2.5rem; flex-wrap: wrap; }
+    .hero-stat { text-align: left; }
+    .hero-stat .num { font-size: 2rem; font-weight: 900; color: var(--gold); letter-spacing: -0.03em; }
+    .hero-stat .lbl { font-size: 0.75rem; color: #6B7280; font-weight: 500; margin-top: 0.15rem; }
+    .hero-cta-group { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--gold); color: var(--dark);
+      font-weight: 700; font-size: 0.9rem;
+      padding: 0.85rem 1.8rem; border-radius: 10px;
+      text-decoration: none; transition: all 0.2s;
+      display: inline-block; letter-spacing: -0.01em;
+    }
+    .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+    .btn-ghost {
+      color: var(--gray-light); font-weight: 500; font-size: 0.9rem;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem;
+      transition: color 0.2s;
+    }
+    .btn-ghost:hover { color: var(--white); }
+
+    /* Card visual — Jeeves Elite */
+    .hero-visual { position: relative; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
+    .jcard {
+      width: 100%; max-width: 470px; aspect-ratio: 1.586;
+      border-radius: 24px; padding: 1.9rem 2.1rem;
+      background: linear-gradient(125deg, #0D0D0D 0%, #1B1B1B 48%, #2B2412 100%);
+      border: 1px solid rgba(201,168,76,0.35);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.03) inset;
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column; justify-content: space-between;
+      transform: rotate(-2.5deg);
+    }
+    .jcard::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 55% 70% at 82% 12%, rgba(201,168,76,0.22) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .jcard::after {
+      content: '';
+      position: absolute; top: -60%; left: -20%;
+      width: 55%; height: 220%;
+      background: linear-gradient(100deg, transparent 0%, rgba(255,255,255,0.045) 45%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.045) 55%, transparent 100%);
+      transform: rotate(12deg);
+      pointer-events: none;
+    }
+    .jcard-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .jcard-logo { font-size: 1.45rem; font-weight: 900; letter-spacing: -0.04em; color: var(--white); }
+    .jcard-elite {
+      font-size: 0.68rem; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase;
+      background: linear-gradient(135deg, var(--gold) 0%, #E8C96A 55%, #A9863A 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      border: 1px solid rgba(201,168,76,0.45);
+      padding: 0.32rem 0.8rem; border-radius: 999px;
+    }
+    .jcard-mid { display: flex; align-items: center; gap: 1rem; }
+    .jcard-chip {
+      width: 48px; height: 36px; border-radius: 7px;
+      background: linear-gradient(135deg, #E8C96A 0%, #C9A84C 45%, #9A7B32 100%);
+      position: relative; flex-shrink: 0;
+    }
+    .jcard-chip::before {
+      content: '';
+      position: absolute; inset: 6px;
+      border: 1px solid rgba(60,45,10,0.55); border-radius: 4px;
+    }
+    .jcard-chip::after {
+      content: '';
+      position: absolute; top: 50%; left: 0; right: 0; height: 1px;
+      background: rgba(60,45,10,0.55);
+    }
+    .jcard-wave { font-size: 1.2rem; color: rgba(255,255,255,0.55); transform: rotate(90deg); }
+    .jcard-number {
+      font-size: clamp(1.05rem, 2.2vw, 1.35rem); font-weight: 600; color: #E5E7EB;
+      letter-spacing: 0.14em; font-variant-numeric: tabular-nums;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+    }
+    .jcard-bottom { display: flex; justify-content: space-between; align-items: flex-end; }
+    .jcard-holder .lbl, .jcard-exp .lbl {
+      font-size: 0.55rem; letter-spacing: 0.18em; text-transform: uppercase; color: #6B7280; margin-bottom: 0.2rem;
+    }
+    .jcard-holder .val { font-size: 0.95rem; font-weight: 700; color: var(--white); letter-spacing: 0.08em; text-transform: uppercase; }
+    .jcard-exp .val { font-size: 0.85rem; font-weight: 600; color: #D1D5DB; letter-spacing: 0.08em; }
+    .jcard-company { font-size: 0.95rem; font-weight: 800; letter-spacing: 0.06em; color: var(--gold); }
+    .jcard-caption { font-size: 0.78rem; color: #6B7280; text-align: center; }
+    .jcard-caption strong { color: var(--gold); font-weight: 700; }
+
+    /* ── Grid Layouts ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+
+    /* ── Feature Cards ── */
+    .feat-card {
+      background: var(--dark3); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.75rem;
+    }
+    .feat-card-light {
+      background: var(--white); border: 1px solid #E5E7EB;
+      border-radius: var(--radius); padding: 1.75rem;
+    }
+    .feat-icon { font-size: 2rem; margin-bottom: 1rem; }
+    .feat-card h4 { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 0.5rem; }
+    .feat-card p { font-size: 0.85rem; line-height: 1.65; }
+    .feat-card-light h4 { font-size: 1rem; font-weight: 700; color: #111; margin-bottom: 0.5rem; }
+    .feat-card-light p { font-size: 0.85rem; line-height: 1.65; color: #555; }
+
+    /* ── Section Header ── */
+    .sec-header { margin-bottom: 3rem; }
+    .sec-header h2 em { color: var(--gold); }
+    .sec-header p { font-size: 1.05rem; margin-top: 0.75rem; max-width: 640px; }
+    .sec-header.center { text-align: center; }
+    .sec-header.center p { margin-left: auto; margin-right: auto; }
+
+    /* ── Comparison Table ── */
+    .compare-table { width: 100%; border-collapse: collapse; margin-top: 2rem; }
+    .compare-table th {
+      padding: 1rem 1.25rem; text-align: left;
+      font-size: 0.8rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+      color: #9CA3AF; border-bottom: 1px solid var(--border);
+    }
+    .compare-table th:not(:first-child) { text-align: center; }
+    .compare-table td {
+      padding: 1rem 1.25rem; font-size: 0.88rem; color: #D1D5DB;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: middle;
+    }
+    .compare-table td:not(:first-child) { text-align: center; }
+    .compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .compare-table .col-jeeves { background: rgba(201,168,76,0.06); }
+    .compare-table th.col-jeeves { color: var(--gold); }
+    .check { color: #34D399; font-size: 1.1rem; }
+    .cross { color: #F87171; font-size: 1.1rem; }
+    .neutral { color: #9CA3AF; }
+
+    /* ── Calculator ── */
+    .calc-wrapper {
+      background: var(--white); border-radius: 20px;
+      border: 1px solid #E5E7EB; overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+    .calc-header {
+      background: var(--dark); padding: 1.5rem 2rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    }
+    .calc-header h3 { color: var(--white); font-size: 1rem; }
+    .calc-header .badge {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em;
+      background: rgba(201,168,76,0.2); color: var(--gold);
+      border: 1px solid rgba(201,168,76,0.4);
+      padding: 0.25rem 0.65rem; border-radius: 999px;
+    }
+    .calc-body { padding: 2rem; }
+    .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .calc-section-title {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--gray); margin-bottom: 1rem;
+      padding-bottom: 0.5rem; border-bottom: 1px solid #E5E7EB;
+    }
+    .calc-field { margin-bottom: 1.25rem; }
+    .calc-field label { font-size: 0.82rem; font-weight: 600; color: #374151; display: block; margin-bottom: 0.4rem; }
+    .calc-field .hint { font-size: 0.72rem; color: var(--gray); margin-top: 0.25rem; }
+    .calc-input-wrap { position: relative; }
+    .calc-input-wrap .prefix {
+      position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);
+      font-size: 0.85rem; font-weight: 600; color: var(--gray);
+    }
+    .calc-input-wrap .suffix {
+      position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
+      font-size: 0.75rem; color: var(--gray);
+    }
+    input[type="number"], input[type="text"], select {
+      width: 100%; padding: 0.65rem 0.9rem;
+      border: 1.5px solid #E5E7EB; border-radius: 8px;
+      font-size: 0.9rem; font-family: inherit;
+      background: #FAFAFA; color: #111;
+      transition: border-color 0.2s;
+      -moz-appearance: textfield;
+    }
+    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    input[type="number"]:focus, select:focus { outline: none; border-color: var(--gold); background: #fff; }
+    .has-prefix input { padding-left: 2rem; }
+    .has-suffix input { padding-right: 3.5rem; }
+    .editable { background: #FFFBEF !important; border-color: #E8C96A !important; }
+
+    .calc-results {
+      background: var(--dark); border-radius: 14px;
+      padding: 1.75rem; margin-top: 1.5rem;
+    }
+    .calc-results h4 { color: var(--white); margin-bottom: 1.25rem; font-size: 0.95rem; }
+    .result-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.75rem 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .result-row:last-child { border-bottom: none; }
+    .result-label { font-size: 0.82rem; color: #9CA3AF; }
+    .result-value { font-size: 0.9rem; font-weight: 700; color: var(--white); }
+    .result-row.highlight { background: rgba(201,168,76,0.08); margin: 0 -1rem; padding: 0.75rem 1rem; border-radius: 8px; }
+    .result-row.highlight .result-label { color: var(--gold); font-weight: 600; }
+    .result-row.highlight .result-value { color: var(--gold); font-size: 1.05rem; }
+    .result-row.total { padding-top: 1rem; margin-top: 0.5rem; }
+    .result-row.total .result-label { color: var(--white); font-weight: 700; font-size: 0.9rem; }
+    .result-row.total .result-value { font-size: 1.3rem; color: var(--gold); }
+
+    /* ── Timeline / Flow ── */
+    .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; position: relative; }
+    .flow::before {
+      content: '';
+      position: absolute; top: 28px; left: 12.5%; right: 12.5%;
+      height: 2px; background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    }
+    .flow-step { text-align: center; padding: 0 1rem; }
+    .flow-dot {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--dark3); border: 2px solid var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem; font-size: 1.4rem; position: relative; z-index: 1;
+    }
+    .flow-step h4 { font-size: 0.88rem; color: var(--white); margin-bottom: 0.4rem; }
+    .flow-step p { font-size: 0.78rem; color: #6B7280; }
+    .flow-time { font-size: 0.7rem; color: var(--gold); font-weight: 700; margin-top: 0.4rem; }
+
+    /* ── CTA Section ── */
+    #sec-cta { background: var(--dark); padding: 6rem 2rem; }
+    .cta-card {
+      background: linear-gradient(135deg, #1A1A1A 0%, #222 100%);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 24px; padding: 4rem;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .cta-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(201,168,76,0.1) 0%, transparent 70%);
+    }
+    .cta-card h2 { color: var(--white); position: relative; z-index: 1; }
+    .cta-card p { color: #9CA3AF; font-size: 1.05rem; margin-top: 0.75rem; position: relative; z-index: 1; }
+    .contact-card {
+      display: inline-flex; align-items: center; gap: 1.5rem;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px; padding: 1.5rem 2.5rem;
+      margin-top: 2.5rem; position: relative; z-index: 1;
+    }
+    .contact-avatar {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold) 0%, #E8A84C 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; font-weight: 900; color: var(--dark);
+    }
+    .contact-info { text-align: left; }
+    .contact-info .name { font-size: 1rem; font-weight: 700; color: var(--white); }
+    .contact-info .role { font-size: 0.8rem; color: #9CA3AF; margin-top: 0.1rem; }
+    .contact-info .email { font-size: 0.82rem; color: var(--gold); margin-top: 0.4rem; }
+    .cta-buttons { display: flex; gap: 1rem; justify-content: center; margin-top: 1.75rem; position: relative; z-index: 1; }
+
+    /* ── Highlight Banner ── */
+    .banner {
+      background: linear-gradient(90deg, rgba(201,168,76,0.12) 0%, rgba(201,168,76,0.04) 100%);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: var(--radius); padding: 1.5rem 2rem;
+      display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;
+    }
+    .banner-icon { font-size: 2rem; }
+    .banner-text h4 { color: #111; margin-bottom: 0.25rem; }
+    .banner-text p { font-size: 0.85rem; color: #555; }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--dark); border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 2rem; text-align: center;
+    }
+    footer p { font-size: 0.78rem; color: #6B7280; }
+    footer strong { color: #9CA3AF; }
+
+    /* ── Utilities ── */
+    .mt-1 { margin-top: 0.5rem; }
+    .mt-2 { margin-top: 1rem; }
+    .mt-3 { margin-top: 1.5rem; }
+    .mt-4 { margin-top: 2rem; }
+    .mb-2 { margin-bottom: 1rem; }
+    .mb-3 { margin-bottom: 1.5rem; }
+    .text-gold { color: var(--gold); }
+    .text-sm { font-size: 0.82rem; }
+    .text-xs { font-size: 0.72rem; }
+    .font-bold { font-weight: 700; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .hero-grid, .grid-2, .calc-grid { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: 1fr 1fr; }
+      .grid-4 { grid-template-columns: 1fr 1fr; }
+      .flow { grid-template-columns: 1fr 1fr; }
+      .flow::before { display: none; }
+      nav { padding: 0 1rem; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════ NAV ═══════════════════════════════ -->
+<nav>
+  <div class="nav-brand">
+    <span class="jeeves-logo">Jeeves</span>
+    <div class="nav-divider"></div>
+    <span class="nav-client">YUMARI</span>
+  </div>
+  <div class="nav-links">
+    <a href="#sec-crossborder">Pay-in &amp; Pay-out</a>
+    <a href="#sec-tarjetas">Cards &amp; Credit</a>
+    <a href="#sec-calc">Calculator</a>
+  </div>
+  <a href="#sec-cta" class="nav-cta">Next steps →</a>
+</nav>
+
+<!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
+<section id="sec-hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-label">Jeeves × Yumari · Proposal · November 2026</div>
+        <h1 class="hero-title">
+          Get paid in Mexico and the US.<br>
+          <em>Pay Peru and China at 0%.</em>
+        </h1>
+        <p class="hero-subtitle">
+          One account to receive MXN and USD and pay your factories: USD to Peruvian bank accounts, and USD or CNY to China. You pay 0% to receive and 0% to send. Cards, a no-interest credit line and AI-powered expense management come in the same platform.
+        </p>
+        <div class="hero-cta-group">
+          <a href="#sec-calc" class="btn-primary">Calculate your savings →</a>
+          <a href="#sec-cta" class="btn-ghost">Talk to Agustin ↓</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="num">0%</div>
+            <div class="lbl">Money in · Money out</div>
+          </div>
+          <div class="hero-stat">
+            <div class="num">US$0</div>
+            <div class="lbl">Platform fee · avg. US$100K+/mo</div>
+          </div>
+          <div class="hero-stat">
+            <div class="num">&lt;10 min</div>
+            <div class="lbl">Payouts worldwide</div>
+          </div>
+          <div class="hero-stat">
+            <div class="num">MX→PE·CN</div>
+            <div class="lbl">Your corridors, covered</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="jcard">
+          <div class="jcard-top">
+            <span class="jcard-logo">Jeeves</span>
+            <span class="jcard-elite">Corporate</span>
+          </div>
+          <div class="jcard-mid">
+            <div class="jcard-chip"></div>
+            <span class="jcard-wave">〣</span>
+          </div>
+          <div class="jcard-number">4532 &nbsp;••••&nbsp; •••• &nbsp;1027</div>
+          <div class="jcard-bottom">
+            <div class="jcard-holder">
+              <div class="lbl">Card Holder</div>
+              <div class="val">Tali Oppenheimer</div>
+            </div>
+            <div class="jcard-exp">
+              <div class="lbl">Valid thru</div>
+              <div class="val">11/30</div>
+            </div>
+            <div class="jcard-company">YUMARI</div>
+          </div>
+        </div>
+        <p class="jcard-caption">Jeeves <strong>corporate card</strong> · Issued for Yumari · Physical &amp; virtual</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ ① PAY-IN / PAY-OUT ═══════════════════════════════ -->
+<section id="sec-crossborder" class="section dark">
+  <div class="container">
+    <div class="sec-header">
+      <div class="section-badge">① Bank-to-bank payments · Pay-in &amp; Pay-out</div>
+      <h2>From MXN and USD to your factories<br><em>with no fees on either side.</em></h2>
+      <p>Today Yumari receives Mexican pesos and US dollars and pays factories in Peru and China. Jeeves covers that whole flow from one account: it receives locally, pays out in the currency each supplier wants and charges nothing to move the money. Jeeves holds commercial financial licenses in Mexico, Brazil and Colombia, which helps as Yumari expands into Colombia and Canada.</p>
+    </div>
+
+    <!-- Flow -->
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-dot">📥</div>
+        <h4>Receive</h4>
+        <p>Receive MXN or USD from your clients into your Jeeves account</p>
+        <div class="flow-time">0% money in</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">🔁</div>
+        <h4>Convert (if needed)</h4>
+        <p>USD to USD needs no FX. Convert MXN or CNY only when you need to.</p>
+        <div class="flow-time">USD→USD: no FX</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">⚡</div>
+        <h4>Pay your factories</h4>
+        <p>Send USD to Peruvian bank accounts, or USD or CNY to China</p>
+        <div class="flow-time">0% money out · &lt;10 min</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-dot">✅</div>
+        <h4>Reconcile</h4>
+        <p>Every movement is tracked and reconciled in the platform</p>
+        <div class="flow-time">Automatic</div>
+      </div>
+    </div>
+
+    <div class="mt-4 grid-2">
+      <div class="feat-card" style="border-color: rgba(201,168,76,0.35);">
+        <div class="feat-icon">🇵🇪</div>
+        <h4>Peru · USD to local accounts <span style="font-size:0.65rem; font-weight:700; letter-spacing:0.06em; background:rgba(201,168,76,0.15); color:var(--gold); border:1px solid rgba(201,168,76,0.3); padding:0.2rem 0.55rem; border-radius:999px; vertical-align:middle; margin-left:0.4rem;">YOUR #1 CORRIDOR</span></h4>
+        <p>Your Peruvian factories want dollars in their Peruvian accounts. Jeeves sends USD straight to them, and since it's dollar to dollar, <strong style="color:#E5E7EB;">no currency conversion is involved</strong>.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🇨🇳</div>
+        <h4>China · USD or CNY</h4>
+        <p>Pay Chinese suppliers in whichever currency they prefer, USD or yuan, from the same account you use for Peru.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🇲🇽 🇺🇸</div>
+        <h4>Receive MXN and USD</h4>
+        <p>Collect in Mexican pesos and US dollars at 0%. Jeeves can also receive Colombian pesos, Brazilian reais and euros, which matters as you add Colombia and Canada.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🤝</div>
+        <h4>Try it at no cost</h4>
+        <p>Open the account and start moving money with no platform fee. If it works for you, move more volume through it. If not, close it, with no strings attached.</p>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <div class="banner" style="background: rgba(201,168,76,0.08); border-color: rgba(201,168,76,0.2);">
+        <div class="banner-icon">🚀</div>
+        <div class="banner-text" style="color: white;">
+          <h4 style="color: var(--gold);">Why this matters for Yumari</h4>
+          <p style="color: #9CA3AF;">Your volume swings a lot, from about US$30K in October to an expected US$600K in November. At those amounts, <strong style="color: var(--gold);">every percentage point paid per transaction</strong> adds up to real money. With Jeeves, receiving and paying out cost 0%, and the platform fee is waived for an average volume above US$100K/month. That way you keep your margin even in your busiest months.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comparison table -->
+    <div class="mt-4">
+      <h3 style="color: var(--white); margin-bottom: 1.5rem;">Jeeves vs. your current setup</h3>
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Criteria</th>
+            <th class="col-jeeves">Jeeves</th>
+            <th>Payoneer (payments)</th>
+            <th>Ark (cards)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Fee to receive funds</td>
+            <td class="col-jeeves text-gold font-bold">0%</td>
+            <td><span class="neutral">~</span> Fees vary by method</td>
+            <td><span class="neutral">—</span></td>
+          </tr>
+          <tr>
+            <td>Fee to send to suppliers</td>
+            <td class="col-jeeves text-gold font-bold">0%</td>
+            <td><span class="neutral">~</span> Withdrawal / transfer fees + FX markup</td>
+            <td><span class="neutral">—</span></td>
+          </tr>
+          <tr>
+            <td>USD to Peruvian bank accounts</td>
+            <td class="col-jeeves"><span class="check">✓</span> Dollar to dollar, no FX</td>
+            <td><span class="neutral">~</span> Depends on route</td>
+            <td><span class="neutral">—</span></td>
+          </tr>
+          <tr>
+            <td>Pay China in USD or CNY</td>
+            <td class="col-jeeves"><span class="check">✓</span> Both</td>
+            <td><span class="check">✓</span></td>
+            <td><span class="neutral">—</span></td>
+          </tr>
+          <tr>
+            <td>Physical &amp; virtual cards</td>
+            <td class="col-jeeves"><span class="check">✓</span> No issuance or annual fee</td>
+            <td><span class="neutral">~</span> Limited</td>
+            <td><span class="check">✓</span></td>
+          </tr>
+          <tr>
+            <td>Credit on card spend</td>
+            <td class="col-jeeves"><span class="check">✓</span> Credit line, no interest</td>
+            <td><span class="cross">✗</span></td>
+            <td><span class="cross">✗</span> Debit only</td>
+          </tr>
+          <tr>
+            <td>Cross-border card purchases</td>
+            <td class="col-jeeves"><span class="check">✓</span> No Jeeves fee (Visa FX rate only)</td>
+            <td><span class="neutral">~</span> FX fee on other currencies</td>
+            <td><span class="check">✓</span> No fee</td>
+          </tr>
+          <tr>
+            <td>AI receipt capture &amp; reconciliation</td>
+            <td class="col-jeeves"><span class="check">✓</span> Snap a photo, auto-booked</td>
+            <td><span class="cross">✗</span></td>
+            <td><span class="neutral">~</span> Basic</td>
+          </tr>
+          <tr>
+            <td>Platform fee</td>
+            <td class="col-jeeves text-gold font-bold">US$0 at avg. US$100K+/mo</td>
+            <td>Per-transaction pricing</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Platforms to manage</td>
+            <td class="col-jeeves text-gold font-bold">1, all included</td>
+            <td colspan="2" style="text-align:center;">2 (Payoneer + Ark)</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-size: 0.72rem; color: #6B7280; margin-top: 0.75rem;">Competitor info is a general reference based on our conversation and public pricing. Please confirm against your current Payoneer and Ark terms.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ ② CARDS & CREDIT ═══════════════════════════════ -->
+<section id="sec-tarjetas" class="section">
+  <div class="container">
+    <div class="sec-header">
+      <div class="section-badge light">② Corporate cards · Credit line</div>
+      <h2>Cards are just the start.<br><em>Add credit at no interest.</em></h2>
+      <p>Ark gives you debit cards. Jeeves gives you cards backed by a <strong>no-interest credit line</strong>: you keep a fixed deposit and spend beyond it, and the balance above your deposit is settled at month end. The cards sit in the same platform as your supplier payments, so you see everything in one place.</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="feat-card-light">
+        <div class="feat-icon">🏦</div>
+        <h4>No-interest credit line</h4>
+        <p>Keep a fixed minimum in your account (about 30%) and spend above it. For example, leave US$20K fixed and spend up to US$50K in the month. At month end Jeeves collects what you spent above your deposit, and the line renews.</p>
+      </div>
+      <div class="feat-card-light">
+        <div class="feat-icon">💳</div>
+        <h4>Physical &amp; virtual cards</h4>
+        <p>There's no issuance or annual renewal fee. Cards use US BINs, with options based in Mexico or Brazil, and can be assigned to each user, then frozen or re-limited in one click. Physical cards ship anywhere, including to a teammate in Peru.</p>
+      </div>
+      <div class="feat-card-light">
+        <div class="feat-icon">🤖</div>
+        <h4>AI expense management</h4>
+        <p>Each cardholder snaps a photo of the receipt. The AI captures it, matches it to the transaction and books it automatically, so expenses are tracked without spreadsheets.</p>
+      </div>
+      <div class="feat-card-light">
+        <div class="feat-icon">🌍</div>
+        <h4>Spend in any currency</h4>
+        <p>Jeeves adds no fee for card purchases in other currencies; you pay only Visa's exchange rate. Cashback starts at 2%, and we're working on an improved rate as part of a broader agreement.</p>
+      </div>
+    </div>
+
+    <!-- Live purchase demo -->
+    <div class="mt-4" style="background: #0A0A0A; border-radius: 20px; padding: 2rem; border: 1px solid #222;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <span style="font-size: 0.7rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.1em;">PAYOUT SENT · LIVE</span>
+        <span style="font-size: 0.7rem; color: #34D399; font-weight: 700;">● DELIVERED</span>
+      </div>
+      <div style="font-size: 2.5rem; font-weight: 900; color: white; letter-spacing: -0.04em;">USD 48,500.00<span style="color: var(--gold); font-size: 1rem; font-weight: 700; margin-left: 0.5rem;">Factory payment · Lima, Peru</span></div>
+      <div style="font-size: 0.82rem; color: #6B7280; margin-top: 0.3rem;">From: Yumari USD account · To: supplier USD account in Peru · Funded by MXN collections</div>
+      <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem; flex-wrap: wrap;">
+        <span style="font-size: 0.78rem; background: rgba(52,211,153,0.1); color: #34D399; border: 1px solid rgba(52,211,153,0.2); padding: 0.4rem 0.9rem; border-radius: 999px;">✓ 0% money out</span>
+        <span style="font-size: 0.78rem; background: rgba(52,211,153,0.1); color: #34D399; border: 1px solid rgba(52,211,153,0.2); padding: 0.4rem 0.9rem; border-radius: 999px;">✓ USD→USD · no FX</span>
+        <span style="font-size: 0.78rem; background: rgba(201,168,76,0.1); color: var(--gold); border: 1px solid rgba(201,168,76,0.2); padding: 0.4rem 0.9rem; border-radius: 999px;">⚡ Sent in under 10 minutes</span>
+        <span style="font-size: 0.78rem; background: rgba(201,168,76,0.1); color: var(--gold); border: 1px solid rgba(201,168,76,0.2); padding: 0.4rem 0.9rem; border-radius: 999px;">🎁 No platform fee</span>
+        <span style="font-size: 0.78rem; background: rgba(99,102,241,0.1); color: #818CF8; border: 1px solid rgba(99,102,241,0.2); padding: 0.4rem 0.9rem; border-radius: 999px;">📊 Auto-reconciled</span>
+      </div>
+      <p style="font-size: 0.7rem; color: #4B5563; margin-top: 1rem;">Illustrative example.</p>
+    </div>
+
+    <div class="mt-4">
+      <div class="banner">
+        <div class="banner-icon">👇</div>
+        <div class="banner-text">
+          <h4>What does it mean in dollars?</h4>
+          <p>Enter Yumari's numbers in the calculator and see the savings live. <a href="#sec-calc" style="color: var(--gold); font-weight: 700; text-decoration: none;">Go to calculator →</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ ③ CALCULATOR ═══════════════════════════════ -->
+<section id="sec-calc" class="section" style="background: #F3F4F6;">
+  <div class="container">
+    <div class="sec-header center">
+      <div class="section-badge light">③ Savings calculator</div>
+      <h2>Calculate your<br><em>annual savings.</em></h2>
+      <p>Enter two numbers, your monthly payment volume and what it costs you today, and the savings update instantly.</p>
+    </div>
+
+    <div class="calc-wrapper">
+      <div class="calc-header">
+        <h3>💰 Savings calculator · Yumari × Jeeves</h3>
+        <span class="badge">Gold fields = editable · Updates instantly</span>
+      </div>
+      <div class="calc-body">
+        <div class="calc-grid">
+          <!-- LEFT: Inputs -->
+          <div>
+            <div class="calc-section-title">🌎 Bank-to-bank payments · MX/US → Peru &amp; China</div>
+
+            <div class="calc-field">
+              <label>Average monthly payment volume</label>
+              <div class="calc-input-wrap has-prefix has-suffix">
+                <span class="prefix">$</span>
+                <input type="number" id="vol_transfer" value="150000" step="10000" class="editable" oninput="calcular()">
+                <span class="suffix">USD/mo</span>
+              </div>
+              <div class="hint">Recent range: about US$30K (Oct) to about US$600K (Nov, expected). Use your expected monthly average.</div>
+            </div>
+
+            <div class="calc-field">
+              <label>Current all-in cost per payment (fees + FX markup)</label>
+              <div class="calc-input-wrap has-suffix">
+                <input type="number" id="costo_actual" value="1.0" step="0.1" class="editable" oninput="calcular()">
+                <span class="suffix">%</span>
+              </div>
+              <div class="hint">What you pay today to receive and send through your current provider. Edit this to match your real cost.</div>
+            </div>
+
+            <div class="calc-field">
+              <label>Jeeves fee to receive + send</label>
+              <div class="calc-input-wrap has-suffix">
+                <input type="number" value="0" readonly style="background: #F3F4F6; color: #6B7280; cursor: default;">
+                <span class="suffix">%</span>
+              </div>
+              <div class="hint">0% money in, 0% money out. USD to USD involves no FX.</div>
+            </div>
+
+            <div style="background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.25); border-radius: 10px; padding: 1rem 1.25rem; margin-top: 0.5rem;">
+              <p style="font-size: 0.8rem; color: #374151;"><strong>With Jeeves:</strong> 0% to receive and 0% to send. The <strong>platform fee is waived</strong> for an agreed average volume of US$100K+/month. Below that, the platform fee is set based on volume.</p>
+            </div>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem;">
+              <span style="font-size: 0.72rem; font-weight: 700; background: #FDF3D7; color: #8A6D2B; padding: 0.3rem 0.7rem; border-radius: 999px;">✦ 0% money in · 0% money out</span>
+              <span style="font-size: 0.72rem; font-weight: 600; background: #F3F4F6; color: #374151; padding: 0.3rem 0.7rem; border-radius: 999px;">✓ USD→USD · no FX</span>
+              <span style="font-size: 0.72rem; font-weight: 600; background: #F3F4F6; color: #374151; padding: 0.3rem 0.7rem; border-radius: 999px;">✓ Unlimited physical &amp; virtual cards</span>
+              <span style="font-size: 0.72rem; font-weight: 600; background: #FDF3D7; color: #8A6D2B; padding: 0.3rem 0.7rem; border-radius: 999px;">🏦 No-interest credit line</span>
+            </div>
+          </div>
+
+          <!-- RIGHT: Results -->
+          <div>
+            <div class="calc-section-title">✅ Annual savings summary</div>
+
+            <div class="calc-results">
+              <h4>Savings with Jeeves · per year</h4>
+
+              <div class="result-row">
+                <span class="result-label">Annual payment volume</span>
+                <span class="result-value" id="r_vol_anual">—</span>
+              </div>
+              <div class="result-row">
+                <span class="result-label">Current annual cost of payments</span>
+                <span class="result-value" id="r_transfer_actual">—</span>
+              </div>
+              <div class="result-row">
+                <span class="result-label">Payments with Jeeves (0% in · 0% out)</span>
+                <span class="result-value" style="color: #34D399;">US$0</span>
+              </div>
+              <div style="height: 1px; background: rgba(255,255,255,0.06); margin: 1rem 0;"></div>
+
+              <div class="result-row">
+                <span class="result-label">⚡ Jeeves platform fee</span>
+                <span class="result-value" id="r_platform">—</span>
+              </div>
+
+              <div style="height: 1px; background: rgba(255,255,255,0.06); margin: 1rem 0;"></div>
+
+              <div class="result-row highlight">
+                <span class="result-label">🏆 Estimated annual savings (USD)</span>
+                <span class="result-value" id="r_neto">—</span>
+              </div>
+              <div class="result-row">
+                <span class="result-label">Platforms to manage</span>
+                <span class="result-value" style="color: #34D399;">2 → 1</span>
+              </div>
+            </div>
+
+            <div style="margin-top: 1.25rem; background: #F9F9F7; border: 1px solid #E5E7EB; border-radius: 12px; padding: 1.25rem;">
+              <p style="font-size: 0.75rem; color: #6B7280;">* Estimates for analysis only. Jeeves charges 0% to receive and 0% to send. Currency conversions (e.g., MXN→USD or USD→CNY) are quoted at the time of the transaction. The platform fee is waived for an agreed average volume of US$100K+/month; below that, it is set based on volume. Your current cost is editable and should reflect your actual fees and FX markup. Final terms are subject to account approval.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ ECOSYSTEM ═══════════════════════════════ -->
+<section class="section dark">
+  <div class="container">
+    <div class="sec-header center">
+      <div class="section-badge">The full platform</div>
+      <h2>Everything connected.<br><em>One dashboard.</em></h2>
+      <p>Jeeves does more than payments and cards. It's the platform that lets Yumari collect, pay suppliers and control spend in one place as you grow into new markets.</p>
+    </div>
+
+    <div class="grid-3" style="margin-bottom: 3rem;">
+      <div class="feat-card" style="text-align: center;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">🌎</div>
+        <h4>Global payments</h4>
+        <p style="font-size: 0.82rem;">Receive MXN, USD, COP, BRL and EUR, and pay suppliers anywhere in under 10 minutes</p>
+      </div>
+      <div class="feat-card" style="text-align: center;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">🏦</div>
+        <h4>Credit line</h4>
+        <p style="font-size: 0.82rem;">No-interest credit on card spend, renewed every month</p>
+      </div>
+      <div class="feat-card" style="text-align: center;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">🤖</div>
+        <h4>AI built in</h4>
+        <p style="font-size: 0.82rem;">Receipt capture, categorization and reconciliation without manual work</p>
+      </div>
+      <div class="feat-card" style="text-align: center;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">🎛️</div>
+        <h4>Control</h4>
+        <p style="font-size: 0.82rem;">Limits, approvals and real-time visibility per user and card</p>
+      </div>
+      <div class="feat-card" style="text-align: center;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">🧾</div>
+        <h4>Receipts</h4>
+        <p style="font-size: 0.82rem;">Snap a photo and it's matched and mapped to your accounting</p>
+      </div>
+      <div class="feat-card" style="text-align: center;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">📊</div>
+        <h4>Analytics</h4>
+        <p style="font-size: 0.82rem;">Dashboards, custom reports and export to your accounting system</p>
+      </div>
+    </div>
+
+    <!-- Big numbers -->
+    <div class="grid-4">
+      <div style="text-align: center; padding: 1.5rem; background: rgba(255,255,255,0.04); border-radius: var(--radius); border: 1px solid var(--border);">
+        <div style="font-size: 2.2rem; font-weight: 900; color: var(--gold); letter-spacing: -0.04em;">0%</div>
+        <div style="font-size: 0.78rem; color: #6B7280; margin-top: 0.3rem;">Money in · Money out</div>
+      </div>
+      <div style="text-align: center; padding: 1.5rem; background: rgba(255,255,255,0.04); border-radius: var(--radius); border: 1px solid var(--border);">
+        <div style="font-size: 2.2rem; font-weight: 900; color: var(--gold); letter-spacing: -0.04em;">&lt;10 min</div>
+        <div style="font-size: 0.78rem; color: #6B7280; margin-top: 0.3rem;">Payouts worldwide</div>
+      </div>
+      <div style="text-align: center; padding: 1.5rem; background: rgba(255,255,255,0.04); border-radius: var(--radius); border: 1px solid var(--border);">
+        <div style="font-size: 2.2rem; font-weight: 900; color: var(--gold); letter-spacing: -0.04em;">US$0</div>
+        <div style="font-size: 0.78rem; color: #6B7280; margin-top: 0.3rem;">Platform fee · avg. US$100K+/mo</div>
+      </div>
+      <div style="text-align: center; padding: 1.5rem; background: rgba(255,255,255,0.04); border-radius: var(--radius); border: 1px solid var(--border);">
+        <div style="font-size: 2.2rem; font-weight: 900; color: var(--gold); letter-spacing: -0.04em;">2→1</div>
+        <div style="font-size: 0.78rem; color: #6B7280; margin-top: 0.3rem;">Platforms consolidated</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ CTA ═══════════════════════════════ -->
+<section id="sec-cta">
+  <div class="container">
+    <div class="cta-card">
+      <div class="section-badge" style="background: rgba(201,168,76,0.15); border-color: rgba(201,168,76,0.3);">Ready for the next step?</div>
+      <h2>Tali, Andrés, let's keep moving.</h2>
+      <p>As we discussed, we'll walk through the platform live on <strong style="color: var(--gold);">Friday, November 27 at 1:00 PM (Mexico City)</strong> and go over any questions about this proposal. From there, you can open the account and start moving payments at no cost.</p>
+
+      <div class="contact-card">
+        <div class="contact-avatar">AR</div>
+        <div class="contact-info">
+          <div class="name">Agustin Raffo</div>
+          <div class="role">Account Executive · Jeeves</div>
+          <div class="email">agustin.raffo@tryjeeves.com</div>
+        </div>
+      </div>
+
+      <div class="cta-buttons">
+        <a href="mailto:agustin.raffo@tryjeeves.com?subject=Yumari%20%C3%97%20Jeeves%20%C2%B7%20Proposal&body=Hi%20Agustin%2C%20this%20is%20Tali%20from%20Yumari.%20We%E2%80%99d%20like%20to%20move%20forward%20with%20the%20Jeeves%20proposal%20for%20pay-in%20and%20pay-out%20payments."
+           class="btn-primary">✓ Contact Agustin</a>
+      </div>
+      <p style="font-size: 0.75rem; color: #6B7280; margin-top: 1rem; position: relative; z-index: 1;">This opens your email client with a message ready to send to Agustin Raffo · agustin.raffo@tryjeeves.com</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ FOOTER ═══════════════════════════════ -->
+<footer>
+  <p>
+    <strong>Jeeves</strong> · tryjeeves.com · Proposal: Pay-in &amp; Pay-out + Cards &amp; Credit · Yumari<br>
+    <span style="margin-top: 0.3rem; display: inline-block;">Prepared by Agustin Raffo · Jeeves</span>
+  </p>
+</footer>
+
+<!-- ═══════════════════════════════ JS CALCULATOR ═══════════════════════════════ -->
+<script>
+  function fmtUSD(n, decimals = 0) {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency', currency: 'USD',
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
+    }).format(n);
+  }
+
+  function calcular() {
+    const vol          = parseFloat(document.getElementById('vol_transfer').value) || 0;
+    const costo_actual = (parseFloat(document.getElementById('costo_actual').value) || 0) / 100;
+
+    const UMBRAL_FEE = 100000; // platform fee waived at avg. US$100K+/mo
+
+    const vol_anual       = vol * 12;
+    const transfer_actual = vol_anual * costo_actual;
+    const fee_waived      = vol >= UMBRAL_FEE;
+
+    document.getElementById('r_vol_anual').textContent       = fmtUSD(vol_anual);
+    document.getElementById('r_transfer_actual').textContent = fmtUSD(transfer_actual);
+
+    const plat = document.getElementById('r_platform');
+    plat.textContent = fee_waived ? 'US$0 (waived)' : 'To be agreed';
+    plat.style.color = fee_waived ? '#34D399' : '#9CA3AF';
+
+    const neto = document.getElementById('r_neto');
+    neto.textContent = fee_waived ? fmtUSD(transfer_actual) : fmtUSD(transfer_actual) + ' − platform fee';
+  }
+
+  calcular();
+</script>
+
+</body>
+</html>
